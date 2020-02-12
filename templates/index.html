@@ -6,10 +6,20 @@
     <title>To-do app</title>
 </head>
 <body>
-    <ul>
-       {% for d in data %}
-       <li>{{ d.description }}</li>
-       {% endfor %}
-    </ul>
+    <!-- Form  -->
+    <form method="post" action="/todos/create">
+        <input type="text" name="description" />
+        <input type="submit" value="Create" />
+      </form>
+
+    <!--Todos-->
+    <div>
+        <ul>
+            {% for d in data %}
+            <li>{{ d.description }}</li>
+            {% endfor %}
+         </ul>
+    </div>
+
 </body>
 </html>
