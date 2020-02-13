@@ -11,6 +11,23 @@
 
         ul{
             list-style: none;
+            padding: 0;
+            margin: 0;
+            width:200px;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        li{
+            clear: both;
+        }
+
+        li button{
+            -webkit-appearance: none;
+            border:none;
+            outline: none;
+            color : red;
+            float : right;
         }
 
     </style>
@@ -18,16 +35,22 @@
 <body>
     <div class="error hidden">Something went wrong</div>
     <!-- Form  -->
-    <form id="form">
-        <input type="text" name="description" id="description" />
-        <input type="submit" value="Create" />
-      </form>
-
+    <div>
+        <form id="form">
+            <input type="text" name="description" id="description" />
+            <input type="submit" value="Create" />
+        </form>
+    </div>
+  
     <!--Todos-->
     <div>
         <ul id="todos">
-            {% for d in data %}
-            <li><input type="checkbox" data-id="{{d.id}}" class="check-completed" {% if d.completed%} checked {% endif %}  > {{ d.description }}</li>
+            {% for todo in todos %}
+            <li class='todo_item'>
+                <input type="checkbox" data-id="{{todo.id}}" class="check-completed" {% if todo.completed%} checked {% endif %} > 
+                {{ todo.description }}
+                <button class="delete-button" data-id='{{todo.id}}'>&cross;</button>
+            </li>
             {% endfor %}
          </ul>
     </div>
@@ -95,6 +118,21 @@
                 document.getElementById('error').className = '';
             })
         }
+
+
+
+
+        //For deleting the todo
+        const deleteButtons = document.querySelectorAll('.delete-button')
+        deleteButtons.forEach((deleteButton, i)=>{
+            deleteButton.onclick = (e) => {
+                const todoId = e.target.dataset['id']
+                fetch('/todos/' + todoId, {
+                    method : 'DELETE'
+                })
+            }
+        })
+
     </script>
 </body>
 </html>
