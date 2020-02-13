@@ -37,7 +37,7 @@
     <!-- Form  -->
     <div>
         <form id="form">
-            <input type="text" name="description" id="description" />
+            <input type="text" name="description" id="description" required/>
             <input type="submit" value="Create" />
         </form>
     </div>
@@ -98,6 +98,7 @@
                 method : 'POST',
                 body : JSON.stringify({
                     'description' : document.getElementById('description').value,
+                    'completed' : false
                 }),
                 headers : {
                     'Content-Type': 'application/json'

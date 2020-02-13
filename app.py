@@ -17,6 +17,13 @@ class Todo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String(), nullable=False)
     completed = db.Column(db.Boolean, nullable=False, default=False)
+    list_id = db.Column(db.Integer, db.ForeignKey('todolists.id'), nullable=False)
+
+class TodoList(db.Model):
+    __tablename__ = 'todolists'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(), nullable=False)
+    todos = db.relationship('Todo', backref='list', lazy=True)
 
 # Debugging statement
 def __repr__(self):
@@ -32,10 +39,12 @@ def create_todo():
     #Implementation of try-except-finally pattern for error handling
     try:
         description = request.get_json()['description']
-        todo = Todo(description=description)
+        completed = request.get_json()['completed']
+        todo = Todo(description=description, completed = completed)
         db.session.add(todo)
         db.session.commit()
         body['description'] = todo.description
+        body['completed'] = todo.completed
     except:
         error = True
         db.session.rollback()
