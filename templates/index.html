@@ -4,9 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>To-do app</title>
+    <style>
+        .hidden{
+            display: none;
+        }
+
+        ul{
+            list-style: none;
+        }
+
+    </style>
 </head>
 <body>
-    <div class="error" class="hidden">Something went wrong</div>
+    <div class="error hidden">Something went wrong</div>
     <!-- Form  -->
     <form id="form">
         <input type="text" name="description" id="description" />
@@ -17,23 +27,60 @@
     <div>
         <ul id="todos">
             {% for d in data %}
-            <li>{{ d.description }}</li>
+            <li><input type="checkbox" data-id="{{d.id}}" class="check-completed" {% if d.completed%} checked {% endif %}  > {{ d.description }}</li>
             {% endfor %}
          </ul>
     </div>
 
+
+
+
     <script>
+
+    //For updating the to do item
+    const checkboxes = document.querySelectorAll('.check-completed')
+    console.log(checkboxes)
+
+    for(let i = 0; i < checkboxes.length; i++){
+        const checkbox = checkboxes[i]
+        checkbox.onchange = function(e){
+            const completedState = e.target.checked;
+            const todoId = e.target.dataset['id'];
+            fetch('/todos/' + todoId + '/set-completed', {
+                method : 'POST',
+                body : JSON.stringify({
+                    'completed' : completedState
+                }),
+                headers : {
+                    'Content-Type' : 'application/json'
+                }
+            })
+            .then(function(){
+                document.getElementById('error').className = 'hidden';
+            })
+            .catch(function(){
+                document.getElementById('error').className = '';
+            })
+        }
+    }
+
+
+
+
+
+    // Adding todo item
         document.getElementById('form').onsubmit = function(e){
             e.preventDefault();
             fetch('/todos/create', {
                 method : 'POST',
                 body : JSON.stringify({
-                    'description' : document.getElementById('description').value
+                    'description' : document.getElementById('description').value,
                 }),
                 headers : {
                     'Content-Type': 'application/json'
                 }
-            }).then(function(response){
+            })
+            .then(function(response){
                 return response.json();
             })
             .then(function(jsonResponse){
@@ -41,7 +88,7 @@
                 const liItem = document.createElement('li');
                 liItem.innerHTML = jsonResponse['description'];
                 document.getElementById('todos').appendChild(liItem)
-                // document.getElementById('error').className = 'hidden';
+                document.getElementById('error').className = 'hidden';
                 document.getElementById('description').value = ''
             })
             .catch(function(){
